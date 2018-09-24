@@ -22,7 +22,9 @@ import droiddevelopers254.devfestnairobi.R
 import droiddevelopers254.devfestnairobi.adapters.AboutDetailsAdapter
 import droiddevelopers254.devfestnairobi.models.AboutDetailsModel
 import droiddevelopers254.devfestnairobi.viewmodels.AboutDetailsViewModel
+import kotlinx.android.synthetic.main.activity_about_details.*
 import kotlinx.android.synthetic.main.content_about_details.*
+import kotlinx.android.synthetic.main.content_about_details.view.*
 
 class AboutDetailsActivity : AppCompatActivity() {
     internal var aboutDetailsList: List<AboutDetailsModel> = ArrayList()
@@ -32,7 +34,6 @@ class AboutDetailsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_about_details)
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
@@ -42,24 +43,23 @@ class AboutDetailsActivity : AppCompatActivity() {
         val extraIntent = intent
         aboutType = extraIntent.getStringExtra("aboutType")
 
-        if (aboutType == "about_devfest") {
-            supportActionBar?.title = getString(R.string.about_devfestnairobi)
+        supportActionBar?.title = when(aboutType){
+            "about_devfest" -> getString(R.string.about_devfestnairobi)
+            "organizers" -> getString(R.string.organizers)
+            "sponsors" -> getString(R.string.sponsors)
+            else -> getString(R.string.app_name)
+
         }
-        if (aboutType == "organizers") {
-            supportActionBar?.title = getString(R.string.organizers)
-        }
-        if (aboutType == "sponsors") {
-            supportActionBar?.title = getString(R.string.sponsors)
-        }
+
+
         //fetch about details
         fetchAboutDetails(aboutType)
 
         //observe live data emitted by view model
         aboutDetailsViewModel.aboutDetails.observe(this, Observer{
-            if (it?.databaseError != null) {
-                handleDatabaseError(it.databaseError)
-            } else {
-                handleFetchAboutDetails(it?.aboutDetailsModelList)
+            when(it!!.databaseError == null) {
+                true -> handleDatabaseError(it.databaseError)
+                else -> handleFetchAboutDetails(it.aboutDetailsModelList)
             }
         })
     }
@@ -68,7 +68,7 @@ class AboutDetailsActivity : AppCompatActivity() {
     }
 
     private fun handleFetchAboutDetails(aboutDetailsModelList: List<AboutDetailsModel>?) {
-        if (aboutDetailsModelList != null) {
+        aboutDetailsModelList?.let {
             aboutDetailsList = aboutDetailsModelList
             initView()
         }
