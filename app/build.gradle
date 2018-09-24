@@ -14,7 +14,8 @@ android {
             storePassword 'droidconKE'
         }
     }
-    compileSdkVersion 'android-P'
+    //compileSdkVersion 'android-P'
+    compileSdkVersion 28
     defaultConfig {
         applicationId "droiddevelopers254.devfestnairobi"
         minSdkVersion 21
